@@ -1,4 +1,8 @@
-import foo from './foo.js'
+import { foo } from './foo.js';
+import { bar } from './bar.js';
 
-foo();
 console.log('main.js');
+bar();
+bar();
+bar();
+foo();

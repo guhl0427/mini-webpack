@@ -14,7 +14,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.17.5",
     "@babel/parser": "^7.17.3",
-    "@babel/traverse": "^7.17.3"
+    "@babel/traverse": "^7.17.3",
+    "babel-preset-env": "^1.7.0",
+    "ejs": "^3.1.6"
   }
 }
