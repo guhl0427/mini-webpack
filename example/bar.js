@@ -1,8 +1,15 @@
+// 暂不支持循环引用
+// import { foo } from "./foo.js";
+// foo()
 export function bar() {
   console.log('bar');
-  console.log(num++);
 }
-var num = 1;
+
+export function setNum(val) {
+  num = val;
+  console.log('setNum', num);
+}
+export var num = 1;
 
 export default {
   fn1: () => {
