@@ -4,13 +4,42 @@ import parser from '@babel/parser';
 import traverse from '@babel/traverse';
 import ejs from 'ejs';
 import { transformFromAst } from '@babel/core';
+import { jsonLoader } from './jsonLoader.js';
 
 let id = 0;
-// console.log(traverse);
+
+const webpackConfig = {
+  module: {
+    rules: [
+      {
+        test: /\.json$/,
+        use: [jsonLoader],
+      },
+    ],
+  },
+};
+
 function createAsset(filePath) {
   // 1.获取文件内容
   let source = fs.readFileSync(filePath, {
     encoding: 'utf-8',
+  });
+
+  const loaders = webpackConfig.module.rules;
+  const loaderContext = {
+    addDeps(deps) {
+      console.log('addDeps', deps);
+    },
+  };
+
+  loaders.forEach(({ test, use }) => {
+    if (test.test(filePath)) {
+      if (Array.isArray(use)) {
+        use.reverse().forEach(fn => {
+          source = fn.call(loaderContext, source);
+        });
+      }
+    }
   });
 
   // console.log(source);
