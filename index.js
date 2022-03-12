@@ -5,6 +5,8 @@ import traverse from '@babel/traverse';
 import ejs from 'ejs';
 import { transformFromAst } from '@babel/core';
 import { jsonLoader } from './jsonLoader.js';
+import { ChangeOutputPath } from './ChangeOutputPath.js';
+import { SyncHook } from 'tapable';
 
 let id = 0;
 
@@ -17,6 +19,11 @@ const webpackConfig = {
       },
     ],
   },
+  plugins: [new ChangeOutputPath()],
+};
+
+const hooks = {
+  emitFile: new SyncHook('context'),
 };
 
 function createAsset(filePath) {
@@ -105,14 +112,27 @@ function build(graph) {
       mapping,
     };
   });
-  // console.log('data----------------');
-  // console.log(data);
 
   const code = ejs.render(bundleTemplate, { modules });
-  console.log('code----------------');
-  console.log(code);
-  fs.writeFileSync('./dist/bundle.js', code);
+
+  let outputPath = './dist/bundle.js';
+  let context = {
+    changePath(path) {
+      outputPath = path;
+    },
+  };
+  hooks.emitFile.call(context);
+  fs.writeFileSync(outputPath, code);
 }
+
+function initPlugins() {
+  const plugins = webpackConfig.plugins;
+
+  plugins.forEach(plugin => {
+    plugin.on(hooks);
+  });
+}
+initPlugins();
 
 const queue = createGraph();
 // console.log(queue);
