@@ -1,4 +1,4 @@
-import { transformFromAst } from '@babel/core';
+import { transformFromAstSync } from '@babel/core';
 import parser from '@babel/parser';
 import traverse from '@babel/traverse';
 import ejs from 'ejs';
@@ -41,6 +41,7 @@ function createAsset(filePath) {
     },
   };
 
+  // loader
   loaders.forEach(({ test, use }) => {
     if (test.test(filePath)) {
       if (Array.isArray(use)) {
@@ -68,7 +69,7 @@ function createAsset(filePath) {
   });
 
   // esm转换成cjs
-  const { code } = transformFromAst(ast, null, {
+  const { code } = transformFromAstSync(ast, null, {
     presets: ['@babel/preset-env'],
   });
   // console.log(code);
